@@ -865,7 +865,7 @@ int main(void) {
 				break;
 			}
             isFirst = FALSE;
-		}else if(strcmp(buffer2, "end") == 0){
+		}else if(strcmp(buffer2, "end!") == 0){
             printf("gmae end");
             break;
         }else{
