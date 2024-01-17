@@ -16,9 +16,9 @@ int main(void) {
 	int port;		//ポート番号
 
 	printf("アドレスを入力してください");
-	scanf("%s", destination);
+	scanf("%s", destination);               //127.0.0.1
 	printf("ポート番号を入力してください");
-	scanf("%d", &port);
+	scanf("%d", &port);                     //11000
 	dest.sin_port = htons(port);
 	dest.sin_family = AF_INET;
 	dest.sin_addr.s_addr = inet_addr(destination);
@@ -41,7 +41,7 @@ int main(void) {
 	char name[] = "name:SAMPLE\n";
     char move[9][20] = {"move:100\n", "move:200\n", "move:300\n", "move:400\n", "move:500\n", "move:600\n", "move:700\n", "move:800\n", "move:900\n"};
 	char cannon[9][20] = {"cannon:100\n", "cannon:200\n", "cannon:300\n", "cannon:400\n", "cannon:500\n", "cannon:600\n", "cannon:700\n", "cannon:800\n", "cannon:900\n"};
-	char search[9][20] = {"search:100\n", "search:200\n", "search:300\n", "search:400\n", "search:500\n", "search:600\n", "search:700\n", "search:800\n", "search:900\n"};
+	char search[11][20] = {"search:0\n", "search:100\n", "search:200\n", "search:300\n", "search:400\n", "search:500\n", "search:600\n", "search:700\n", "search:800\n", "search:900\n", "search:1000\n"};
 	char state[3][20] = {"state:hp\n", "state:hight\n", "state:cannon\n"};
 	
 	//サーバにデータを送信：名前の送信
@@ -58,11 +58,10 @@ int main(void) {
 	printf("→ %s\n\n", buffer);
 
 	while(1){
-        char buffer2[1024];
-		//サーバからデータを受信
-        memset(buffer2, 0, sizeof(buffer2));
-		recv(s, buffer2, 1024, 0);
-		printf("→ %s\n\n", buffer2);
+        //サーバからデータを受信
+        memset(buffer, '\0', sizeof(buffer));
+	    recv(s, buffer, sizeof(buffer), 0);
+	    printf("→ %s\n\n", buffer);
 	}
 
 	// Windows でのソケットの終了
