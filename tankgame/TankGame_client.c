@@ -37,24 +37,27 @@ int main(void) {
 
 	printf("%sに接続しました\n", destination);
 	
-    char msg[1024];
-	char buffer[1024];
+    char buffer[1024];
+	char name[] = "name:SAMPLE\n";
+    char move[9][20] = {"move:100\n", "move:200\n", "move:300\n", "move:400\n", "move:500\n", "move:600\n", "move:700\n", "move:800\n", "move:900\n"};
+	char cannon[9][20] = {"cannon:100\n", "cannon:200\n", "cannon:300\n", "cannon:400\n", "cannon:500\n", "cannon:600\n", "cannon:700\n", "cannon:800\n", "cannon:900\n"};
+	char search[9][20] = {"search:100\n", "search:200\n", "search:300\n", "search:400\n", "search:500\n", "search:600\n", "search:700\n", "search:800\n", "search:900\n"};
+	char state[3][20] = {"state:hp\n", "state:hight\n", "state:cannon\n"};
+	
+	//サーバにデータを送信：名前の送信
+	send(s, name, strlen(name), 0);
+	
+	//サーバからデータを受信：nameの返信 を受け取る
+	memset(buffer, '\0', sizeof(buffer));
+	recv(s, buffer, sizeof(buffer), 0);
+	printf("→ %s\n\n", buffer);
 
-	//サーバからデータを受信
-	recv(s, buffer, 1024, 0);
+	//サーバからデータを受信：START を受け取る
+	memset(buffer, '\0', sizeof(buffer));
+	recv(s, buffer, sizeof(buffer), 0);
 	printf("→ %s\n\n", buffer);
 
 	while(1){
-        //名前の入力
-		printf("送信メッセージを入力(qで終了)");
-		scanf("%s", msg);
-		if(msg[0] == 'q' || msg[0] == 'Q'){
-			break;
-		}
-		
-		//サーバにデータを送信
-		send(s, msg, strlen(msg), 0);
-
         char buffer2[1024];
 		//サーバからデータを受信
         memset(buffer2, 0, sizeof(buffer2));
