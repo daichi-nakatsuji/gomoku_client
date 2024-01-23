@@ -32,7 +32,6 @@ int main(void) {
 	if (connect(s, (struct sockaddr *) &dest, sizeof(dest))) {
 		printf("%sに接続できませんでした\n", destination);
 		return -1;
-
 	}
 
 	printf("%sに接続しました\n", destination);
@@ -57,11 +56,99 @@ int main(void) {
 	recv(s, buffer, sizeof(buffer), 0);
 	printf("→ %s\n\n", buffer);
 
+	int Hight = 5;
+	int MyHight = 2;
+	int x, y;
+	int cannon_num;
+	char Search_Result[20];
+	char null[1024] = "search_result:null\n";
+
+
 	while(1){
-        //サーバからデータを受信
+		//自身の座標を確認
+		send(s, state[1], strlen(state[1]), 0);
+		//サーバからデータを受信
         memset(buffer, '\0', sizeof(buffer));
 	    recv(s, buffer, sizeof(buffer), 0);
-	    printf("→ %s\n\n", buffer);
+	    printf("→ %s\n", buffer);
+		//フィールドの上部と下部どちらにいるか
+		sscanf(buffer, "state_hight_result:[%d]", Hight);
+		Hight = Hight / 100;
+		if(Hight >= 5){
+			MyHight = 0;
+		}else{
+			MyHight = 1;
+		}
+
+		//防御
+		switch (MyHight){
+		case 0:		//自身の座標が500以上の時
+			//自身の上部を確認
+			send(s, search[0], strlen(search[0]), 0);
+			//サーバからデータを受信
+        	memset(buffer, '\0', sizeof(buffer));
+	    	recv(s, buffer, sizeof(buffer), 0);
+	    	printf("→ %s\n", buffer);
+
+			//移動指示
+			if(strcmp(buffer, null) == 0){
+				send(s, move[Hight - 5], strlen(move[Hight - 5]), 0);
+			}else{
+				sscanf(buffer, "search_result:[%d],[%d],[%s]\n", x, y, Search_Result);
+				if(y <= 700){
+					send(s, move[y/100 + 2], strlen(move[y/100 + 2]), 0);
+				}
+			}
+			//サーバからデータを受信
+    		memset(buffer, '\0', sizeof(buffer));
+	    	recv(s, buffer, sizeof(buffer), 0);
+	    	printf("→ %s\n", buffer);
+			break;
+		case 1:		//自身の座標が500未満の時
+			//自身の下部を確認
+			send(s, search[10], strlen(search[10]), 0);
+			//サーバからデータを受信
+        	memset(buffer, '\0', sizeof(buffer));
+	    	recv(s, buffer, sizeof(buffer), 0);
+	    	printf("→ %s\n", buffer);
+			if(strcmp(buffer, null) == 0){
+				send(s, move[Hight + 4], strlen(move[Hight + 4]), 0);
+			}else{
+				sscanf(buffer, "search_result:[%d],[%d],[%s]\n", x, y, Search_Result);
+				if(y >= 200){
+					send(s, move[y/100 - 2], strlen(move[y/100 - 2]), 0);
+				}
+			}
+			//サーバからデータを受信
+    		memset(buffer, '\0', sizeof(buffer));
+	    	recv(s, buffer, sizeof(buffer), 0);
+	    	printf("→ %s\n", buffer);
+			break;
+		default:
+			break;
+		}
+
+		//攻撃
+		send(s, state[2], strlen(state[2]), 0);
+		//サーバからデータを受信
+    	memset(buffer, '\0', sizeof(buffer));
+		recv(s, buffer, sizeof(buffer), 0);
+    	printf("→ %s\n", buffer);
+		sscanf(buffer, "state_cannon_result:[%d]", cannon_num);
+		//自身の高さから上下2か所にキャノンを打つ
+		if(cannon_num >= 2 && Hight > 2 && Hight < 9){
+			send(s, cannon[Hight+1], strlen(cannon[Hight+1]), 0);
+			//サーバからデータを受信
+    		memset(buffer, '\0', sizeof(buffer));
+	    	recv(s, buffer, sizeof(buffer), 0);
+	    	printf("→ %s\n", buffer);
+
+			send(s, cannon[Hight-1], strlen(cannon[Hight-1]), 0);
+			//サーバからデータを受信
+    		memset(buffer, '\0', sizeof(buffer));
+	    	recv(s, buffer, sizeof(buffer), 0);
+	    	printf("→ %s\n", buffer);
+		}
 	}
 
 	// Windows でのソケットの終了
